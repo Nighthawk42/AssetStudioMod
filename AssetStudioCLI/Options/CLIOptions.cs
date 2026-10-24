@@ -13,7 +13,7 @@ namespace AssetStudioCLI.Options
         Convert,
         Logger,
         Live2D,
-        FBX,
+        Model,
         Filter,
         Advanced,
     }
@@ -107,11 +107,9 @@ namespace AssetStudioCLI.Options
         public static Option<bool> f_l2dAssetSearchByFilename;
         public static Option<CubismLive2DExtractor.Live2DMotionMode> o_l2dMotionMode;
         public static Option<bool> f_l2dForceBezier;
-        //fbx
-        public static Option<float> o_fbxScaleFactor;
-        public static Option<int> o_fbxBoneSize;
-        public static Option<AnimationExportMode> o_fbxAnimMode;
-        public static Option<bool> f_fbxUvsAsDiffuseMaps;
+        //model (glTF)
+        public static Option<float> o_modelScaleFactor;
+        public static Option<AnimationExportMode> o_modelAnimMode;
         //filter
         public static Option<List<string>> o_filterByName;
         public static Option<List<string>> o_filterByContainer;
@@ -203,8 +201,8 @@ namespace AssetStudioCLI.Options
                     "Dump - Generate json dumps of loaded asset\n" +
                     "Info - Load file(s) and show the number of available for export assets\n" +
                     "Live2D - Export Live2D Cubism models\n" +
-                    "SplitObjects - Export all model objects (split) (fbx)\n" +
-                    "Animator - Export Animator assets (fbx)\n",
+                    "SplitObjects - Export all model objects (split) (glTF)\n" +
+                    "Animator - Export Animator assets (glTF)\n",
                 optionExample: "Example: \"-m info\"\n",
                 optionHelpGroup: HelpGroups.General
             );
@@ -370,46 +368,27 @@ namespace AssetStudioCLI.Options
             );
             #endregion
 
-            #region Init FBX Options
-            o_fbxScaleFactor = new GroupedOption<float>
+            #region Init Model Options
+            o_modelScaleFactor = new GroupedOption<float>
             (
                 optionDefaultValue: 1f,
-                optionName: "--fbx-scale-factor <value>",
-                optionDescription: "Specify the FBX Scale Factor\n" +
+                optionName: "--model-scale-factor <value>",
+                optionDescription: "Specify the scale factor for exported glTF models\n" +
                     "<Value: float number from 0 to 100 (default=1)>\n",
-                optionExample: "Example: \"--fbx-scale-factor 50\"\n",
-                optionHelpGroup: HelpGroups.FBX
+                optionExample: "Example: \"--model-scale-factor 50\"\n",
+                optionHelpGroup: HelpGroups.Model
             );
-            o_fbxBoneSize = new GroupedOption<int>
-            (
-                optionDefaultValue: 10,
-                optionName: "--fbx-bone-size <value>",
-                optionDescription: "Specify the FBX Bone Size\n" +
-                    "<Value: integer number from 0 to 100 (default=10)>\n",
-                optionExample: "Example: \"--fbx-bone-size 10\"\n",
-                optionHelpGroup: HelpGroups.FBX
-            );
-            o_fbxAnimMode = new GroupedOption<AnimationExportMode>
+            o_modelAnimMode = new GroupedOption<AnimationExportMode>
             (
                 optionDefaultValue: AnimationExportMode.Auto,
-                optionName: "--fbx-animation",
-                optionDescription: "Specify the FBX animation export mode\n" + 
+                optionName: "--model-animation <value>",
+                optionDescription: "Specify the animation export mode for glTF models\n" +
                     "<Value: auto(default) | skip | all>\n" +
                     "Auto - Search for model-related animations and export model with them\n" +
                     "Skip - Don't export animations\n" +
                     "All - Try to bind all loaded animations to each loaded model\n",
-                optionExample: "Example: \"--fbx-animation skip\"\n",
-                optionHelpGroup: HelpGroups.FBX
-            );
-            f_fbxUvsAsDiffuseMaps = new GroupedOption<bool>
-            (
-                optionDefaultValue: false,
-                optionName: "--fbx-uvs-as-diffuse",
-                optionDescription: "(Flag) If specified, Studio will export all UVs as Diffuse maps.\n" +
-                    "Сan be useful if you cannot find some UVs after exporting (e.g. in Blender)\n" +
-                    "(But can also cause some bugs with UVs)",
-                optionExample: "",
-                optionHelpGroup: HelpGroups.FBX
+                optionExample: "Example: \"--model-animation skip\"\n",
+                optionHelpGroup: HelpGroups.Model
             );
             #endregion
 
@@ -723,16 +702,6 @@ namespace AssetStudioCLI.Options
                             return;
                         }
                         f_l2dForceBezier.Value = true;
-                        flagIndexes.Add(i);
-                        break;
-                    case "--fbx-uvs-as-diffuse":
-                        if (o_workMode.Value != WorkMode.SplitObjects)
-                        {
-                            Console.WriteLine($"{"Error".Color(brightRed)} during parsing [{flag.Color(brightYellow)}] flag. This flag is not suitable for the current working mode [{o_workMode.Value}].\n");
-                            ShowOptionDescription(o_workMode);
-                            return;
-                        }
-                        f_fbxUvsAsDiffuseMaps.Value = true;
                         flagIndexes.Add(i);
                         break;
                     case "--filter-with-regex":
@@ -1071,51 +1040,36 @@ namespace AssetStudioCLI.Options
                                     return;
                             }
                             break;
-                        case "--fbx-scale-factor":
+                        case "--model-scale-factor":
                         {
                             var isFloat = float.TryParse(value, out var floatValue);
                             if (isFloat && floatValue >= 0 && floatValue <= 100)
                             {
-                                o_fbxScaleFactor.Value = floatValue;
+                                o_modelScaleFactor.Value = floatValue;
                             }
                             else
                             {
                                 Console.WriteLine($"{"Error".Color(brightRed)} during parsing [{option.Color(brightYellow)}] option. Unsupported scale factor value: [{value.Color(brightRed)}].\n");
-                                ShowOptionDescription(o_fbxScaleFactor);
+                                ShowOptionDescription(o_modelScaleFactor);
                                 return;
                             }
                             break;
                         }
-                        case "--fbx-bone-size":
-                        {
-                            var isInt = int.TryParse(value, out var intValue);
-                            if (isInt && intValue >= 0 && intValue <= 100)
-                            {
-                                o_fbxBoneSize.Value = intValue;
-                            }
-                            else
-                            {
-                                Console.WriteLine($"{"Error".Color(brightRed)} during parsing [{option.Color(brightYellow)}] option. Unsupported bone size value: [{value.Color(brightRed)}].\n");
-                                ShowOptionDescription(o_fbxBoneSize);
-                                return;
-                            }
-                            break;
-                        }
-                        case "--fbx-animation":
+                        case "--model-animation":
                             switch (value.ToLower())
                             {
                                 case "auto":
-                                    o_fbxAnimMode.Value = AnimationExportMode.Auto;
+                                    o_modelAnimMode.Value = AnimationExportMode.Auto;
                                     break;
                                 case "skip":
-                                    o_fbxAnimMode.Value = AnimationExportMode.Skip;
+                                    o_modelAnimMode.Value = AnimationExportMode.Skip;
                                     break;
                                 case "all":
-                                    o_fbxAnimMode.Value = AnimationExportMode.All;
+                                    o_modelAnimMode.Value = AnimationExportMode.All;
                                     break;
                                 default:
                                     Console.WriteLine($"{"Error".Color(brightRed)} during parsing [{option.Color(brightYellow)}] option. Unsupported animation export mode: [{value.Color(brightRed)}].\n");
-                                    ShowOptionDescription(o_fbxAnimMode);
+                                    ShowOptionDescription(o_modelAnimMode);
                                     return;
                             }
                             break;
@@ -1482,10 +1436,8 @@ namespace AssetStudioCLI.Options
                         : $"# Filter by Name(s): \"{string.Join("\", \"", o_filterByName.Value)}\"");
                     sb.AppendLine($"# Filter With Regex: {f_filterWithRegex}");
                     sb.AppendLine($"# Export Image Format: {o_imageFormat}");
-                    sb.AppendLine($"# FBX Scale Factor: {o_fbxScaleFactor}");
-                    sb.AppendLine($"# FBX Bone Size: {o_fbxBoneSize}");
-                    sb.AppendLine($"# FBX Animation Mode: {o_fbxAnimMode}");
-                    sb.AppendLine($"# FBX UVs as Diffuse Maps: {f_fbxUvsAsDiffuseMaps}");
+                    sb.AppendLine($"# Model Scale Factor: {o_modelScaleFactor}");
+                    sb.AppendLine($"# Model Animation Mode: {o_modelAnimMode}");
                     break;
             }
             sb.AppendLine("======");

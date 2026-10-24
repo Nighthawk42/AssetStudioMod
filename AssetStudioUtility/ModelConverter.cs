@@ -28,7 +28,7 @@ namespace AssetStudio
         public ModelConverter(GameObject m_GameObject, ImageFormat imageFormat, List<AnimationClip> animationList = null)
         {
             collectAnimationClips = animationList == null;
-            this.imageFormat = imageFormat;
+            this.imageFormat = GetModelImageFormat(imageFormat);
             if (m_GameObject.m_Animator != null)
             {
                 InitWithAnimator(m_GameObject.m_Animator);
@@ -52,8 +52,8 @@ namespace AssetStudio
         public ModelConverter(string rootName, List<GameObject> m_GameObjects, ImageFormat imageFormat, List<AnimationClip> animationList = null)
         {
             collectAnimationClips = animationList == null;
-            this.imageFormat = imageFormat;
-            RootFrame = CreateFrame(rootName, Vector3.Zero, new Quaternion(0, 0, 0, 0), Vector3.One);
+            this.imageFormat = GetModelImageFormat(imageFormat);
+            RootFrame = CreateFrame(rootName, Vector3.Zero, new Quaternion(0, 0, 0, 1), Vector3.One);
             foreach (var m_GameObject in m_GameObjects)
             {
                 if (m_GameObject.m_Animator != null && collectAnimationClips)
@@ -81,7 +81,7 @@ namespace AssetStudio
         public ModelConverter(Animator m_Animator, ImageFormat imageFormat, List<AnimationClip> animationList = null)
         {
             collectAnimationClips = animationList == null;
-            this.imageFormat = imageFormat;
+            this.imageFormat = GetModelImageFormat(imageFormat);
             InitWithAnimator(m_Animator);
             if (collectAnimationClips)
             {
@@ -93,6 +93,12 @@ namespace AssetStudio
                 animationClipUniqArray = animationList.Distinct(animationClipEqComparer).ToArray();
             }
             ConvertAnimations();
+        }
+
+        // glTF only allows PNG and JPEG textures
+        private static ImageFormat GetModelImageFormat(ImageFormat imageFormat)
+        {
+            return imageFormat == ImageFormat.Jpeg ? ImageFormat.Jpeg : ImageFormat.Png;
         }
 
         private void InitWithAnimator(Animator m_Animator)
@@ -229,8 +235,25 @@ namespace AssetStudio
         private static void SetFrame(ImportedFrame frame, Vector3 t, Quaternion q, Vector3 s)
         {
             frame.LocalPosition = new Vector3(-t.X, t.Y, t.Z);
-            frame.LocalRotation = Fbx.QuaternionToEuler(new Quaternion(q.X, -q.Y, -q.Z, q.W));
+            frame.LocalRotation = ConvertRotation(q);
             frame.LocalScale = s;
+        }
+
+        // Unity is left-handed; mirroring X converts to the right-handed space used by IImported
+        private static Quaternion ConvertRotation(Quaternion q)
+        {
+            return new Quaternion(q.X, -q.Y, -q.Z, q.W);
+        }
+
+        // Unity euler angles (degrees) are applied in Z, X, Y order
+        private static Quaternion ConvertEulerRotation(Vector3 eulerDegrees)
+        {
+            const float degToRad = MathF.PI / 180f;
+            var qx = System.Numerics.Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitX, eulerDegrees.X * degToRad);
+            var qy = System.Numerics.Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitY, eulerDegrees.Y * degToRad);
+            var qz = System.Numerics.Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitZ, eulerDegrees.Z * degToRad);
+            var q = qy * qx * qz;
+            return ConvertRotation(new Quaternion(q.X, q.Y, q.Z, q.W));
         }
 
         private void ConvertTransforms(Transform trans, ImportedFrame parent)
@@ -550,21 +573,44 @@ namespace AssetStudio
             if (combine)
             {
                 meshR.m_GameObject.TryGet(out var m_GameObject);
-                var frame = RootFrame.FindChild(m_GameObject.m_Name);
+                if (!transformDictionary.TryGetValue(m_GameObject.m_Transform, out var frame))
+                {
+                    frame = RootFrame.FindChild(m_GameObject.m_Name);
+                }
                 if (frame != null)
                 {
-                    frame.LocalPosition = RootFrame.LocalPosition;
-                    frame.LocalRotation = RootFrame.LocalRotation;
-                    while (frame.Parent != null)
-                    {
-                        frame = frame.Parent;
-                        frame.LocalPosition = RootFrame.LocalPosition;
-                        frame.LocalRotation = RootFrame.LocalRotation;
-                    }
+                    // Static batched vertices are already in world space: cancel the parents' transform on this frame only
+                    CancelParentTransform(frame);
                 }
             }
 
             MeshList.Add(iMesh);
+        }
+
+        private static void CancelParentTransform(ImportedFrame frame)
+        {
+            // System.Numerics uses row vectors: world = local * parentWorld
+            var parentWorld = System.Numerics.Matrix4x4.Identity;
+            for (var parent = frame.Parent; parent != null; parent = parent.Parent)
+            {
+                var r = parent.LocalRotation;
+                var local = System.Numerics.Matrix4x4.CreateScale(parent.LocalScale.X, parent.LocalScale.Y, parent.LocalScale.Z)
+                    * System.Numerics.Matrix4x4.CreateFromQuaternion(new System.Numerics.Quaternion(r.X, r.Y, r.Z, r.W))
+                    * System.Numerics.Matrix4x4.CreateTranslation(parent.LocalPosition.X, parent.LocalPosition.Y, parent.LocalPosition.Z);
+                parentWorld *= local;
+            }
+
+            if (System.Numerics.Matrix4x4.Invert(parentWorld, out var inverse)
+                && System.Numerics.Matrix4x4.Decompose(inverse, out var scale, out var rotation, out var translation))
+            {
+                frame.LocalScale = new Vector3(scale.X, scale.Y, scale.Z);
+                frame.LocalRotation = new Quaternion(rotation.X, rotation.Y, rotation.Z, rotation.W);
+                frame.LocalPosition = new Vector3(translation.X, translation.Y, translation.Z);
+            }
+            else
+            {
+                Logger.Warning($"Unable to place static batched mesh \"{frame.Name}\": its parent transform can't be inverted.");
+            }
         }
 
         private static Mesh GetMesh(Renderer meshR)
@@ -828,8 +874,7 @@ namespace AssetStudio
                         for (int i = 0; i < numKeys; i++)
                         {
                             var quat = quats[i];
-                            var value = Fbx.QuaternionToEuler(new Quaternion(quat.X, -quat.Y, -quat.Z, quat.W));
-                            track.Rotations.Add(new ImportedKeyframe<Vector3>(times[i], value));
+                            track.Rotations.Add(new ImportedKeyframe<Quaternion>(times[i], ConvertRotation(quat)));
                         }
                     }
                     foreach (var m_RotationCurve in animationClip.m_RotationCurves)
@@ -837,8 +882,7 @@ namespace AssetStudio
                         var track = iAnim.FindTrack(FixBonePath(animationClip, m_RotationCurve.path));
                         foreach (var m_Curve in m_RotationCurve.curve.m_Curve)
                         {
-                            var value = Fbx.QuaternionToEuler(new Quaternion(m_Curve.value.X, -m_Curve.value.Y, -m_Curve.value.Z, m_Curve.value.W));
-                            track.Rotations.Add(new ImportedKeyframe<Vector3>(m_Curve.time, value));
+                            track.Rotations.Add(new ImportedKeyframe<Quaternion>(m_Curve.time, ConvertRotation(m_Curve.value)));
                         }
                     }
                     foreach (var m_PositionCurve in animationClip.m_PositionCurves)
@@ -862,7 +906,7 @@ namespace AssetStudio
                         var track = iAnim.FindTrack(FixBonePath(animationClip, m_EulerCurve.path));
                         foreach (var m_Curve in m_EulerCurve.curve.m_Curve)
                         {
-                            track.Rotations.Add(new ImportedKeyframe<Vector3>(m_Curve.time, new Vector3(m_Curve.value.X, -m_Curve.value.Y, -m_Curve.value.Z)));
+                            track.Rotations.Add(new ImportedKeyframe<Quaternion>(m_Curve.time, ConvertEulerRotation(m_Curve.value)));
                         }
                     }
                     foreach (var m_FloatCurve in animationClip.m_FloatCurves)
@@ -980,14 +1024,14 @@ namespace AssetStudio
                         )));
                         break;
                     case 2:
-                        var value = Fbx.QuaternionToEuler(new Quaternion
+                        var value = ConvertRotation(new Quaternion
                         (
                             data[curveIndex++ + offset],
-                            -data[curveIndex++ + offset],
-                            -data[curveIndex++ + offset],
+                            data[curveIndex++ + offset],
+                            data[curveIndex++ + offset],
                             data[curveIndex++ + offset]
                         ));
-                        track.Rotations.Add(new ImportedKeyframe<Vector3>(time, value));
+                        track.Rotations.Add(new ImportedKeyframe<Quaternion>(time, value));
                         break;
                     case 3:
                         track.Scalings.Add(new ImportedKeyframe<Vector3>(time, new Vector3
@@ -998,12 +1042,12 @@ namespace AssetStudio
                         )));
                         break;
                     case 4:
-                        track.Rotations.Add(new ImportedKeyframe<Vector3>(time, new Vector3
+                        track.Rotations.Add(new ImportedKeyframe<Quaternion>(time, ConvertEulerRotation(new Vector3
                         (
                             data[curveIndex++ + offset],
-                            -data[curveIndex++ + offset],
-                            -data[curveIndex++ + offset]
-                        )));
+                            data[curveIndex++ + offset],
+                            data[curveIndex++ + offset]
+                        ))));
                         break;
                     default:
                         curveIndex++;

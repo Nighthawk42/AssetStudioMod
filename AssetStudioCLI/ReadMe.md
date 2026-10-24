@@ -12,8 +12,7 @@ AssetStudioModCLI <input path to asset file(s)/folder> [-m, --mode <value>]
                       [--image-format <value>] [--audio-format <value>]
                       [--l2d-group-option <value>] [--l2d-motion-mode <value>]
                       [--l2d-search-by-filename] [--l2d-force-bezier]
-                      [--fbx-scale-factor <value>] [--fbx-bone-size <value>]
-                      [--fbx-animation] [--fbx-uvs-as-diffuse]
+                      [--model-scale-factor <value>] [--model-animation <value>]
                       [--filter-by-name <text>] [--filter-by-container <text>]
                       [--filter-by-pathid <text>] [--filter-by-text <text>]
                       [--filter-with-regex] [--blockinfo-comp <value>]
@@ -33,8 +32,8 @@ General Options:
                                 Dump - Generate json dumps of loaded asset
                                 Info - Load file(s) and show the number of available for export assets
                                 Live2D - Export Live2D Cubism models
-                                SplitObjects - Export all model objects (split) (fbx)
-                                Animator - Export Animator assets (fbx)
+                                SplitObjects - Export all model objects (split) (glTF)
+                                Animator - Export Animator assets (glTF)
                                 Example: "-m info"
 
   -t, --asset-type <value(s)>   Specify asset type(s) to export
@@ -111,25 +110,19 @@ Live2D Options:
   --l2d-force-bezier            (Flag) If specified, Linear motion segments will be calculated as Bezier segments
                                 (May help if the exported motions look jerky/not smooth enough)
 
-FBX Options:
-  --fbx-scale-factor <value>    Specify the FBX Scale Factor
+Model Options:
+  Models are exported as binary glTF 2.0 (.glb) with embedded textures (png, or jpg with "--image-format jpg")
+
+  --model-scale-factor <value>  Specify the scale factor for exported glTF models
                                 <Value: float number from 0 to 100 (default=1)>
-                                Example: "--fbx-scale-factor 50"
+                                Example: "--model-scale-factor 50"
 
-  --fbx-bone-size <value>       Specify the FBX Bone Size
-                                <Value: integer number from 0 to 100 (default=10)>
-                                Example: "--fbx-bone-size 10"
-
-  --fbx-animation               Specify the FBX animation export mode
+  --model-animation <value>     Specify the animation export mode for glTF models
                                 <Value: auto(default) | skip | all>
                                 Auto - Search for model-related animations and export model with them
                                 Skip - Don't export animations
                                 All - Try to bind all loaded animations to each loaded model
-                                Example: "--fbx-animation skip"
-
-  --fbx-uvs-as-diffuse          (Flag) If specified, Studio will export all UVs as Diffuse maps.
-                                Can be useful if you cannot find some UVs after exporting (e.g. in Blender)
-                                (But can also cause some bugs with UVs)
+                                Example: "--model-animation skip"
 
 Filter Options:
   --filter-by-name <text>       Specify the name or regexp by which assets should be filtered
@@ -227,7 +220,7 @@ Tools:
 | `inspect_assets` | Unity version and number of exportable assets per type |
 | `list_assets` | Paged asset list (name, type, container, source file, size, path_id) with name/container filters |
 | `export_assets` | Export/convert assets (images, wav, obj, text, json, ...), raw export, or json dump |
-| `export_models` | Export Animator models or split scene objects as FBX |
+| `export_models` | Export Animator models or split scene objects as glTF (.glb) |
 | `export_live2d` | Export Live2D Cubism models |
 | `extract_bundles` | Decompress bundles into their contained files |
 | `preview_asset` | Return a texture/sprite as an inline PNG, or a text asset's content |

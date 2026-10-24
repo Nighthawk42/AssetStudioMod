@@ -27,7 +27,7 @@
   - **MovieTexture**
   - **VideoClip**
   - **MonoBehaviour** : json
-  - **Animator** : export to FBX file with bound AnimationClip
+  - **Animator** : export to glTF (.glb) file with bound AnimationClip
  
 ## AssetStudioMod Features
 
@@ -92,7 +92,7 @@ AssetStudioModCLI <asset folder path> -m dump -o <output folder path>
 AssetStudioModCLI <asset folder path> -m live2d
 ```
 > When running in live2d mode, the only filter option supported is `--filter-by-name`.
-- Export all FBX objects (similar to "Export all objects (split)" option in the GUI)
+- Export all model objects as glTF (similar to "Export all objects (split)" option in the GUI)
 ```
 AssetStudioModCLI <asset folder path> -m splitObjects
 ```
@@ -130,9 +130,9 @@ AssetStudioModCLI <asset folder path> -t audio --filter-by-text char
 ```
 AssetStudioModCLI <asset folder path> -t audio --filter-by-name voice --filter-by-container char
 ```
-- Export FBX objects that have "model" or "scene" in their names and set the scale factor to 10
+- Export model objects that have "model" or "scene" in their names and set the scale factor to 10
 ```
-AssetStudioModCLI <asset folder path> -m splitObjects --filter-by-name model,scene --fbx-scale-factor 10
+AssetStudioModCLI <asset folder path> -m splitObjects --filter-by-name model,scene --model-scale-factor 10
 ```
 - Export MonoBehaviour assets that require an assembly folder to read and create a log file
 ```
@@ -189,10 +189,17 @@ First, use [Il2CppDumper](https://github.com/Perfare/Il2CppDumper) to generate d
 
 ## Build
 
-* Visual Studio 2022 or newer
-* **AssetStudioFBXNative** uses [FBX SDK 2020.2.1](https://www.autodesk.com/developer-network/platform-technologies/fbx-sdk-2020-2-1), before building, you need to install the FBX SDK and modify the project file, change include directory and library directory to point to the FBX SDK directory
+* [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
+* Visual Studio 2022 or newer with the C++ workload (for **Texture2DDecoderNative**)
 
 ## Open source libraries used
+
+### Image and model export
+* [mono/SkiaSharp](https://github.com/mono/SkiaSharp) - image processing and encoding
+* [vpenades/SharpGLTF](https://github.com/vpenades/SharpGLTF) - glTF 2.0 model export
+
+### MCP server
+* [modelcontextprotocol/csharp-sdk](https://github.com/modelcontextprotocol/csharp-sdk)
 
 ### Texture2DDecoder
 * [Ishotihadus/mikunyan](https://github.com/Ishotihadus/mikunyan)

@@ -125,16 +125,14 @@ namespace AssetStudioCLI.Mcp
             return await RunExport(args, output_folder, ExactIdFilter(exactIds, source_file), ct);
         }
 
-        [McpServerTool(Name = "export_models"), Description("Export 3D models as FBX. mode=animator exports Animator assets (rigged models with optional animations); mode=splitObjects exports every scene model object separately.")]
+        [McpServerTool(Name = "export_models"), Description("Export 3D models as binary glTF 2.0 (.glb) with embedded textures, skeletons, blend shapes and animations. mode=animator exports Animator assets (rigged models with optional animations); mode=splitObjects exports every scene model object separately.")]
         public static async Task<object> ExportModels(
             [Description(InputPathDesc)] string input_path,
             [Description("Folder to write exported files to. Created if missing.")] string output_folder,
             [Description("animator (default) or splitObjects.")] string mode = "animator",
-            [Description("Animation handling: auto (default, export model-related animations), skip, all.")] string fbx_animation = null,
-            [Description("FBX scale factor (default 1).")] float? fbx_scale_factor = null,
-            [Description("FBX bone size 0-100 (default 10).")] int? fbx_bone_size = null,
-            [Description("Export UVs as diffuse maps.")] bool uvs_as_diffuse = false,
-            [Description("Image format for model textures: png (default), jpg, bmp, tga, webp.")] string image_format = null,
+            [Description("Animation handling: auto (default, export model-related animations), skip, all.")] string animation = null,
+            [Description("Model scale factor (default 1).")] float? scale_factor = null,
+            [Description("Texture format embedded in the model: png (default) or jpg.")] string image_format = null,
             [Description("Overwrite existing files instead of adding a suffix.")] bool overwrite = false,
             [Description(UnityVersionDesc)] string unity_version = null,
             CancellationToken ct = default)
@@ -149,10 +147,8 @@ namespace AssetStudioCLI.Mcp
                 return Error($"Unsupported mode \"{mode}\". Use animator or splitObjects.");
 
             var args = new ArgsBuilder(input_path).Mode(modeArg).Output(output_folder)
-                .Add("--fbx-animation", fbx_animation)
-                .Add("--fbx-scale-factor", fbx_scale_factor?.ToString(System.Globalization.CultureInfo.InvariantCulture))
-                .Add("--fbx-bone-size", fbx_bone_size?.ToString())
-                .Flag("--fbx-uvs-as-diffuse", uvs_as_diffuse)
+                .Add("--model-animation", animation)
+                .Add("--model-scale-factor", scale_factor?.ToString(System.Globalization.CultureInfo.InvariantCulture))
                 .Add("--image-format", image_format)
                 .Flag("-r", overwrite)
                 .Add("--unity-version", unity_version);

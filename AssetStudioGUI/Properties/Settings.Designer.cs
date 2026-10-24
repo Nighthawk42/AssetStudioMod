@@ -314,12 +314,12 @@ namespace AssetStudioGUI.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string fbxSettings {
+        public string modelExportSettings {
             get {
-                return ((string)(this["fbxSettings"]));
+                return ((string)(this["modelExportSettings"]));
             }
             set {
-                this["fbxSettings"] = value;
+                this["modelExportSettings"] = value;
             }
         }
         

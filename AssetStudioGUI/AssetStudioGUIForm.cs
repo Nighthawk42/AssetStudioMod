@@ -144,7 +144,7 @@ namespace AssetStudioGUI
             assetsManager.Options.BundleOptions.DecompressToDisk = Properties.Settings.Default.decompressToDisk;
             FMODinit();
             listSearchFilterMode.SelectedIndex = 0;
-            FbxInitOptions(Properties.Settings.Default.fbxSettings);
+            ModelInitOptions(Properties.Settings.Default.modelExportSettings);
 
             logger = new GUILogger(StatusStripUpdate);
             Logger.Default = logger;
@@ -921,7 +921,7 @@ namespace AssetStudioGUI
                         PreviewSprite(assetItem, assetItem.Asset as Sprite);
                         break;
                     case ClassIDType.Animator:
-                        StatusStripUpdate("Can be exported to FBX file.");
+                        StatusStripUpdate("Can be exported to glTF (.glb) file.");
                         break;
                     case ClassIDType.AnimationClip:
                         StatusStripUpdate("Can be exported with Animator or Objects");
@@ -1798,9 +1798,9 @@ namespace AssetStudioGUI
                 if (gameObjects.Count > 0)
                 {
                     var saveFileDialog = new SaveFileDialog();
-                    saveFileDialog.FileName = gameObjects[0].m_Name + " (merge).fbx";
+                    saveFileDialog.FileName = gameObjects[0].m_Name + " (merge).glb";
                     saveFileDialog.AddExtension = false;
-                    saveFileDialog.Filter = "Fbx file (*.fbx)|*.fbx";
+                    saveFileDialog.Filter = "glTF binary file (*.glb)|*.glb";
                     saveFileDialog.InitialDirectory = saveDirectoryBackup;
                     if (saveFileDialog.ShowDialog(this) == DialogResult.OK)
                     {
@@ -2689,18 +2689,23 @@ namespace AssetStudioGUI
             Properties.Settings.Default.Save();
         }
 
-        private static void FbxInitOptions(string base64String)
+        private static void ModelInitOptions(string base64String)
         {
-            if (string.IsNullOrEmpty(base64String))
+            if (!string.IsNullOrEmpty(base64String))
             {
-                Studio.FbxSettings = new Fbx.Settings();
-                Properties.Settings.Default.fbxSettings = Studio.FbxSettings.ToBase64();
-                Properties.Settings.Default.Save();
+                try
+                {
+                    Studio.ModelSettings = ModelExportSettings.FromBase64(base64String);
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Warning($"Saved model export settings are invalid and were reset.\n{ex.Message}");
+                }
             }
-            else
-            {
-                Studio.FbxSettings = Fbx.Settings.FromBase64(base64String);
-            }
+            Studio.ModelSettings = new ModelExportSettings();
+            Properties.Settings.Default.modelExportSettings = Studio.ModelSettings.ToBase64();
+            Properties.Settings.Default.Save();
         }
 
         #region FMOD

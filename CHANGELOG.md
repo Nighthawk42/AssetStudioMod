@@ -4,6 +4,10 @@
 #### Breaking Changes
 - Retargeted to .NET 10 (LTS). Dropped .NET Framework 4.7.2, .NET 8 and .NET 9 builds
 - Removed `Texture2DDecoderWrapper` (was only used by the net472 build)
+- Replaced FBX model export with glTF 2.0 (.glb) using SharpGLTF (MIT); removed `AssetStudioFBXNative`/`AssetStudioFBXWrapper` and the Autodesk FBX SDK dependency
+    - Models are written as single `.glb` files with embedded textures, skins, blend shapes and animations
+    - CLI: `--fbx-scale-factor` and `--fbx-animation` renamed to `--model-scale-factor` and `--model-animation`; `--fbx-bone-size` and `--fbx-uvs-as-diffuse` removed
+    - GUI: removed FBX-only export options (Euler filter, bone size, cast to bone, FBX version/format, UV bindings)
 
 #### New features
 - Added MCP server mode to the CLI (`AssetStudioModCLI mcp`) for agent-driven asset inspection and extraction

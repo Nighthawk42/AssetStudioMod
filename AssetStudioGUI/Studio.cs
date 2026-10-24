@@ -90,7 +90,7 @@ namespace AssetStudioGUI
         public static Dictionary<MonoBehaviour, CubismModel> l2dModelDict = new Dictionary<MonoBehaviour, CubismModel>();
         private static Dictionary<Object, string> l2dAssetContainers = new Dictionary<Object, string>();
         internal static Action<string> StatusStripUpdate = x => { };
-        internal static Fbx.Settings FbxSettings;
+        internal static ModelExportSettings ModelSettings;
 
         public static int ExtractFolder(string path, string savePath)
         {
@@ -825,8 +825,7 @@ namespace AssetStudioGUI
                             }
                         }
                         Directory.CreateDirectory(targetPath);
-                        //导出FBX
-                        Logger.Info($"Exporting {filename}.fbx");
+                        Logger.Info($"Exporting {filename}.glb");
                         try
                         {
                             ExportGameObject(j.gameObject, targetPath);
@@ -837,7 +836,7 @@ namespace AssetStudioGUI
                         }
 
                         Progress.Report(++k, count);
-                        Logger.Info($"Finished exporting {filename}.fbx");
+                        Logger.Info($"Finished exporting {filename}.glb");
                     }
                 }
                 if (Properties.Settings.Default.openAfterExport)

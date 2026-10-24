@@ -74,7 +74,7 @@
     <Setting Name="autoplayAudio" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="fbxSettings" Type="System.String" Scope="User">
+    <Setting Name="modelExportSettings" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="decompressToDisk" Type="System.Boolean" Scope="User">

@@ -24,28 +24,11 @@ jobs:
 
       - uses: microsoft/setup-msbuild@v2
 
-      - name: Cache FBX SDK
-        id: cache-fbx
-        uses: actions/cache@v4
-        with:
-          path: C:\Program Files\Autodesk\FBX\FBX SDK\2020.2.1
-          key: fbxsdk-2020.2.1-vs2019
-
-      - name: Download FBX SDK
-        if: steps.cache-fbx.outputs.cache-hit != 'true'
-        shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Force fbx | Out-Null
-          Invoke-WebRequest "https://damassets.autodesk.net/content/dam/autodesk/www/adn/fbx/2020-2-1/fbx202021_fbxsdk_vs2019_win.exe" -OutFile "fbx\fbxsdk.exe"
-          Start-Process -FilePath "fbx\fbxsdk.exe" -ArgumentList "/S" -Wait
-
       - name: Build native libraries
         shell: pwsh
         run: |
           foreach ($platform in 'Win32', 'x64') {
             msbuild Texture2DDecoderNative\Texture2DDecoderNative.vcxproj /p:Configuration=Release /p:Platform=$platform /verbosity:minimal
-            if ($LASTEXITCODE) { exit $LASTEXITCODE }
-            msbuild AssetStudioFBXNative\AssetStudioFBXNative.vcxproj /p:Configuration=Release /p:Platform=$platform /verbosity:minimal
             if ($LASTEXITCODE) { exit $LASTEXITCODE }
           }
 

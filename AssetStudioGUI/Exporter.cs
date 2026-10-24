@@ -232,24 +232,24 @@ namespace AssetStudioGUI
 
         public static bool ExportAnimator(AssetItem item, string exportPath, List<AssetItem> animationList = null)
         {
-            var exportFullPath = Path.Combine(exportPath, item.Text, item.Text + ".fbx");
+            var exportFullPath = Path.Combine(exportPath, item.Text, item.Text + ".glb");
             if (File.Exists(exportFullPath))
             {
-                exportFullPath = Path.Combine(exportPath, item.Text + item.UniqueID, item.Text + ".fbx");
+                exportFullPath = Path.Combine(exportPath, item.Text + item.UniqueID, item.Text + ".glb");
             }
-            if (!Studio.FbxSettings.ExportAnimations)
+            if (!Studio.ModelSettings.ExportAnimations)
                 animationList = new List<AssetItem>();
             var m_Animator = (Animator)item.Asset;
             var convert = animationList != null
                 ? new ModelConverter(m_Animator, Properties.Settings.Default.convertType, animationList.Select(x => (AnimationClip)x.Asset).ToList())
                 : new ModelConverter(m_Animator, Properties.Settings.Default.convertType);
-            ExportFbx(convert, exportFullPath);
+            ExportModel(convert, exportFullPath);
             return true;
         }
 
-        private static void ExportFbx(IImported convert, string exportPath)
+        private static void ExportModel(IImported convert, string exportPath)
         {
-            ModelExporter.ExportFbx(exportPath, convert, Studio.FbxSettings);
+            ModelExporter.ExportGltf(exportPath, convert, Studio.ModelSettings);
         }
 
         public static bool ExportRawFile(AssetItem item, string exportPath)
@@ -362,24 +362,24 @@ namespace AssetStudioGUI
 
         public static void ExportGameObject(GameObject gameObject, string exportPath, List<AssetItem> animationList = null)
         {
-            if (!Studio.FbxSettings.ExportAnimations)
+            if (!Studio.ModelSettings.ExportAnimations)
                 animationList = new List<AssetItem>();
             var convert = animationList != null
                 ? new ModelConverter(gameObject, Properties.Settings.Default.convertType, animationList.Select(x => (AnimationClip)x.Asset).ToList())
                 : new ModelConverter(gameObject, Properties.Settings.Default.convertType);
-            exportPath = exportPath + FixFileName(gameObject.m_Name) + ".fbx";
-            ExportFbx(convert, exportPath);
+            exportPath = exportPath + FixFileName(gameObject.m_Name) + ".glb";
+            ExportModel(convert, exportPath);
         }
 
         public static void ExportGameObjectMerge(List<GameObject> gameObject, string exportPath, List<AssetItem> animationList = null)
         {
             var rootName = Path.GetFileNameWithoutExtension(exportPath);
-            if (!Studio.FbxSettings.ExportAnimations)
+            if (!Studio.ModelSettings.ExportAnimations)
                 animationList = new List<AssetItem>();
             var convert = animationList != null
                 ? new ModelConverter(rootName, gameObject, Properties.Settings.Default.convertType, animationList.Select(x => (AnimationClip)x.Asset).ToList())
                 : new ModelConverter(rootName, gameObject, Properties.Settings.Default.convertType);
-            ExportFbx(convert, exportPath);
+            ExportModel(convert, exportPath);
         }
 
         public static string FixFileName(string str)

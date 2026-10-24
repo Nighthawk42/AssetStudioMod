@@ -916,8 +916,8 @@ namespace AssetStudioCLI
                         }
                     }
                     Directory.CreateDirectory(targetPath);
-                    //导出FBX
-                    Logger.Info($"Exporting {filename}.fbx");
+                    //导出glTF
+                    Logger.Info($"Exporting {filename}.glb");
                     Progress.Report(k, exportableCount);
                     try
                     {
@@ -949,10 +949,10 @@ namespace AssetStudioCLI
 
         public static void ExportAnimator()
         {
-            var animationList = CLIOptions.o_fbxAnimMode.Value == AnimationExportMode.Auto
+            var animationList = CLIOptions.o_modelAnimMode.Value == AnimationExportMode.Auto
                 ? null
                 : new List<AssetItem>();
-            var exportAllAnimations = CLIOptions.o_fbxAnimMode.Value == AnimationExportMode.All;
+            var exportAllAnimations = CLIOptions.o_modelAnimMode.Value == AnimationExportMode.All;
 
             Logger.Info("Searching for Animator assets...");
             var animatorList = new List<AssetItem>();
