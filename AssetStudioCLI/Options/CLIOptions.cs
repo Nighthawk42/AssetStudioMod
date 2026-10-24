@@ -110,6 +110,7 @@ namespace AssetStudioCLI.Options
         //model (glTF)
         public static Option<float> o_modelScaleFactor;
         public static Option<AnimationExportMode> o_modelAnimMode;
+        public static Option<bool> o_modelBindPose;
         //filter
         public static Option<List<string>> o_filterByName;
         public static Option<List<string>> o_filterByContainer;
@@ -388,6 +389,17 @@ namespace AssetStudioCLI.Options
                     "Skip - Don't export animations\n" +
                     "All - Try to bind all loaded animations to each loaded model\n",
                 optionExample: "Example: \"--model-animation skip\"\n",
+                optionHelpGroup: HelpGroups.Model
+            );
+            o_modelBindPose = new GroupedOption<bool>
+            (
+                optionDefaultValue: true,
+                optionName: "--model-pose <value>",
+                optionDescription: "Specify the pose of skinned models in exported glTF files\n" +
+                    "<Value: bind(default) | scene>\n" +
+                    "Bind - Clean rest pose that the mesh was skinned in\n" +
+                    "Scene - Pose saved in the scene/prefab (may look distorted without animation)\n",
+                optionExample: "Example: \"--model-pose scene\"\n",
                 optionHelpGroup: HelpGroups.Model
             );
             #endregion
@@ -1073,6 +1085,21 @@ namespace AssetStudioCLI.Options
                                     return;
                             }
                             break;
+                        case "--model-pose":
+                            switch (value.ToLower())
+                            {
+                                case "bind":
+                                    o_modelBindPose.Value = true;
+                                    break;
+                                case "scene":
+                                    o_modelBindPose.Value = false;
+                                    break;
+                                default:
+                                    Console.WriteLine($"{"Error".Color(brightRed)} during parsing [{option.Color(brightYellow)}] option. Unsupported model pose: [{value.Color(brightRed)}].\n");
+                                    ShowOptionDescription(o_modelBindPose);
+                                    return;
+                            }
+                            break;
                         case "--blockinfo-comp":
                             switch (value.ToLower())
                             {
@@ -1438,6 +1465,7 @@ namespace AssetStudioCLI.Options
                     sb.AppendLine($"# Export Image Format: {o_imageFormat}");
                     sb.AppendLine($"# Model Scale Factor: {o_modelScaleFactor}");
                     sb.AppendLine($"# Model Animation Mode: {o_modelAnimMode}");
+                    sb.AppendLine($"# Model Pose: {(o_modelBindPose.Value ? "Bind" : "Scene")}");
                     break;
             }
             sb.AppendLine("======");

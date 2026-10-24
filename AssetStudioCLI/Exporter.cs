@@ -285,6 +285,7 @@ namespace AssetStudioCLI
             {
                 ScaleFactor = CLIOptions.o_modelScaleFactor.Value,
                 ExportAnimations = CLIOptions.o_modelAnimMode.Value != AnimationExportMode.Skip,
+                UseBindPose = CLIOptions.o_modelBindPose.Value,
             };
             ModelExporter.ExportGltf(exportPath, convert, modelSettings);
         }

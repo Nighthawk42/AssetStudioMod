@@ -26,6 +26,8 @@ namespace AssetStudio
         public bool ExportAnimations { get; set; } = true;
         public bool ExportBlendShape { get; set; } = true;
         public float ScaleFactor { get; set; } = 1.0f;
+        // Pose skinned skeletons in their bind pose (clean rest pose) instead of the pose saved in the scene
+        public bool UseBindPose { get; set; } = true;
 
         public static ModelExportSettings FromBase64(string base64String)
         {
@@ -95,6 +97,11 @@ namespace AssetStudio
                 rootNode = CreateNodeTree(scene.CreateNode(imported.RootFrame.Name), imported.RootFrame);
             }
 
+            if (settings.UseBindPose && settings.ExportSkins && imported.MeshList?.Count > 0)
+            {
+                ApplyBindPose();
+            }
+
             if (imported.MeshList?.Count > 0)
             {
                 foreach (var (frame, node) in frameToNode.ToList())
@@ -129,6 +136,85 @@ namespace AssetStudio
             }
             return node;
         }
+
+        #region Bind pose
+        // Unity prefabs are often saved in a pose that differs from the mesh bind pose (the Animator fixes it at runtime).
+        // Rebuild joint transforms from the inverse bind matrices so skinned meshes show their rest shape at the
+        // skinned mesh's current scene placement. Non-joint nodes keep their world transforms.
+        private void ApplyBindPose()
+        {
+            var desiredWorld = new Dictionary<ImportedFrame, NMatrix4x4>();
+            foreach (var iMesh in imported.MeshList)
+            {
+                if (iMesh.BoneList == null || iMesh.BoneList.Count == 0)
+                    continue;
+                var meshFrame = imported.RootFrame.FindFrameByPath(iMesh.Path);
+                if (meshFrame == null)
+                    continue;
+                var meshWorld = FrameWorld(meshFrame);
+                foreach (var bone in iMesh.BoneList)
+                {
+                    var frame = bone.Path == null ? null : imported.RootFrame.FindFrameByPath(bone.Path);
+                    if (frame == null || desiredWorld.ContainsKey(frame) || !IsValidBindPose(ToNumerics(bone.Matrix), out var inverseBind))
+                        continue;
+                    // Row vectors: vertex * inverseBind * jointWorld == vertex * meshWorld for every joint
+                    if (NMatrix4x4.Invert(inverseBind, out var bindToMesh))
+                        desiredWorld[frame] = bindToMesh * meshWorld;
+                }
+            }
+            if (desiredWorld.Count == 0)
+                return;
+
+            ApplyBindPose(imported.RootFrame, NMatrix4x4.Identity, NMatrix4x4.Identity, desiredWorld);
+        }
+
+        private void ApplyBindPose(ImportedFrame frame, NMatrix4x4 parentWorldBefore, NMatrix4x4 parentWorldAfter, Dictionary<ImportedFrame, NMatrix4x4> desiredWorld)
+        {
+            var worldBefore = LocalMatrix(frame) * parentWorldBefore;
+            // Joints get their bind world; everything else keeps its original world placement
+            var worldAfter = desiredWorld.TryGetValue(frame, out var desired) ? desired : worldBefore;
+            if (frameToNode.TryGetValue(frame, out var node)
+                && NMatrix4x4.Invert(parentWorldAfter, out var inverseParent)
+                && NMatrix4x4.Decompose(worldAfter * inverseParent, out var scale, out var rotation, out var translation))
+            {
+                node.LocalTransform = new AffineTransform(scale, NQuaternion.Normalize(rotation), translation);
+            }
+            else
+            {
+                worldAfter = LocalMatrix(frame) * parentWorldAfter;
+            }
+            for (var i = 0; i < frame.Count; i++)
+            {
+                ApplyBindPose(frame[i], worldBefore, worldAfter, desiredWorld);
+            }
+        }
+
+        private static bool IsValidBindPose(NMatrix4x4 matrix, out NMatrix4x4 sanitized)
+        {
+            sanitized = matrix;
+            sanitized.M14 = 0;
+            sanitized.M24 = 0;
+            sanitized.M34 = 0;
+            sanitized.M44 = 1;
+            var determinant = sanitized.GetDeterminant();
+            return float.IsFinite(determinant) && MathF.Abs(determinant) > 1e-12f;
+        }
+
+        private static NMatrix4x4 LocalMatrix(ImportedFrame frame)
+        {
+            return NMatrix4x4.CreateScale(ToNumerics(frame.LocalScale))
+                * NMatrix4x4.CreateFromQuaternion(ToNumerics(frame.LocalRotation))
+                * NMatrix4x4.CreateTranslation(ToNumerics(frame.LocalPosition));
+        }
+
+        private static NMatrix4x4 FrameWorld(ImportedFrame frame)
+        {
+            var world = LocalMatrix(frame);
+            for (var parent = frame.Parent; parent != null; parent = parent.Parent)
+                world *= LocalMatrix(parent);
+            return world;
+        }
+        #endregion
 
         #region Mesh
         private void ExportMesh(GNode node, ImportedMesh iMesh, GNode skeletonRoot)

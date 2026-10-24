@@ -65,6 +65,7 @@ namespace AssetStudioGUI
             Studio.ModelSettings.ExportAnimations = exportAnimations.Checked;
             Studio.ModelSettings.ExportBlendShape = exportBlendShape.Checked;
             Studio.ModelSettings.ScaleFactor = (float)scaleFactor.Value;
+            Studio.ModelSettings.UseBindPose = useBindPose.Checked;
             Properties.Settings.Default.modelExportSettings = Studio.ModelSettings.ToBase64();
 
             Properties.Settings.Default.Save();
@@ -90,6 +91,7 @@ namespace AssetStudioGUI
             exportAnimations.Checked = modelSettings.ExportAnimations;
             exportBlendShape.Checked = modelSettings.ExportBlendShape;
             scaleFactor.Value = Math.Clamp((decimal)modelSettings.ScaleFactor, scaleFactor.Minimum, scaleFactor.Maximum);
+            useBindPose.Checked = modelSettings.UseBindPose;
         }
 
         private void resetButton_Click(object sender, EventArgs e)

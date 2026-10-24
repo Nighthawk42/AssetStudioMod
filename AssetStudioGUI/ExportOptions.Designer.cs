@@ -64,6 +64,7 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.modelResetButton = new System.Windows.Forms.Button();
             this.exportBlendShape = new System.Windows.Forms.CheckBox();
+            this.useBindPose = new System.Windows.Forms.CheckBox();
             this.exportAnimations = new System.Windows.Forms.CheckBox();
             this.scaleFactor = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
@@ -477,6 +478,7 @@
             this.groupBox2.BackColor = System.Drawing.SystemColors.Menu;
             this.groupBox2.Controls.Add(this.modelResetButton);
             this.groupBox2.Controls.Add(this.exportBlendShape);
+            this.groupBox2.Controls.Add(this.useBindPose);
             this.groupBox2.Controls.Add(this.exportAnimations);
             this.groupBox2.Controls.Add(this.scaleFactor);
             this.groupBox2.Controls.Add(this.label5);
@@ -511,7 +513,20 @@
             this.exportBlendShape.TabIndex = 5;
             this.exportBlendShape.Text = "Export blendshape";
             this.exportBlendShape.UseVisualStyleBackColor = true;
-            // 
+            //
+            // useBindPose
+            //
+            this.useBindPose.AutoSize = true;
+            this.useBindPose.Checked = true;
+            this.useBindPose.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.useBindPose.Location = new System.Drawing.Point(6, 114);
+            this.useBindPose.Name = "useBindPose";
+            this.useBindPose.Size = new System.Drawing.Size(150, 17);
+            this.useBindPose.TabIndex = 6;
+            this.useBindPose.Text = "Skinned models in bind pose";
+            this.optionTooltip.SetToolTip(this.useBindPose, "Export skinned models in their clean rest (bind) pose.\nUncheck to keep the pose saved in the game scene.");
+            this.useBindPose.UseVisualStyleBackColor = true;
+            //
             // exportAnimations
             // 
             this.exportAnimations.AutoSize = true;
@@ -629,6 +644,7 @@
         private System.Windows.Forms.NumericUpDown scaleFactor;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.CheckBox exportBlendShape;
+        private System.Windows.Forms.CheckBox useBindPose;
         private System.Windows.Forms.CheckBox exportAnimations;
         private System.Windows.Forms.ComboBox assetGroupOptions;
         private System.Windows.Forms.Label label6;

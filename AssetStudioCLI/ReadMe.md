@@ -1,4 +1,4 @@
-## AssetStudioModCLI
+﻿## AssetStudioModCLI
 CLI version of AssetStudioMod.
 - Supported asset types for export: `Texture2D`, `Texture2DArray`, `Sprite`, `TextAsset`, `MonoBehaviour`, `Font`, `Shader`, `MovieTexture`, `AudioClip`, `VideoClip`, `Mesh`, `Animator`.
 
@@ -13,6 +13,7 @@ AssetStudioModCLI <input path to asset file(s)/folder> [-m, --mode <value>]
                       [--l2d-group-option <value>] [--l2d-motion-mode <value>]
                       [--l2d-search-by-filename] [--l2d-force-bezier]
                       [--model-scale-factor <value>] [--model-animation <value>]
+                      [--model-pose <value>]
                       [--filter-by-name <text>] [--filter-by-container <text>]
                       [--filter-by-pathid <text>] [--filter-by-text <text>]
                       [--filter-with-regex] [--blockinfo-comp <value>]
@@ -123,6 +124,12 @@ Model Options:
                                 Skip - Don't export animations
                                 All - Try to bind all loaded animations to each loaded model
                                 Example: "--model-animation skip"
+
+  --model-pose <value>          Specify the pose of skinned models in exported glTF files
+                                <Value: bind(default) | scene>
+                                Bind - Clean rest pose that the mesh was skinned in
+                                Scene - Pose saved in the scene/prefab (may look distorted without animation)
+                                Example: "--model-pose scene"
 
 Filter Options:
   --filter-by-name <text>       Specify the name or regexp by which assets should be filtered

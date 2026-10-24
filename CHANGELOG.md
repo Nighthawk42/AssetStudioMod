@@ -7,6 +7,7 @@
 - Replaced FBX model export with glTF 2.0 (.glb) using SharpGLTF (MIT); removed `AssetStudioFBXNative`/`AssetStudioFBXWrapper` and the Autodesk FBX SDK dependency
     - Models are written as single `.glb` files with embedded textures, skins, blend shapes and animations
     - CLI: `--fbx-scale-factor` and `--fbx-animation` renamed to `--model-scale-factor` and `--model-animation`; `--fbx-bone-size` and `--fbx-uvs-as-diffuse` removed
+    - Skinned models are exported in their bind (rest) pose by default; `--model-pose scene` / GUI option keeps the pose saved in the scene
     - GUI: removed FBX-only export options (Euler filter, bone size, cast to bone, FBX version/format, UV bindings)
 
 #### New features
