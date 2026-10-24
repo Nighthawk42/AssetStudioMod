@@ -20,7 +20,7 @@ namespace AssetStudio
 
         private bool switchSwizzled;
         private int gobsPerBlock;
-        private SixLabors.ImageSharp.Size blockSize;
+        private System.Drawing.Size blockSize;
 
         public int OutputDataSize => outPutDataSize;
         public bool UsesSwitchSwizzle => switchSwizzled;
@@ -75,9 +75,9 @@ namespace AssetStudio
             m_Height = realSize.Height;
         }
 
-        public SixLabors.ImageSharp.Size GetUncroppedSize()
+        public System.Drawing.Size GetUncroppedSize()
         {
-            return new SixLabors.ImageSharp.Size(m_Width, m_Height);
+            return new System.Drawing.Size(m_Width, m_Height);
         }
 
         public bool DecodeTexture2D(byte[] bytes)

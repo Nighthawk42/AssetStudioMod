@@ -155,9 +155,7 @@ namespace AssetStudioGUI
 
         private static Encoding GetSysEncoding()
         {
-#if !NETFRAMEWORK
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-#endif
             return Encoding.GetEncoding(0);
         }
     }

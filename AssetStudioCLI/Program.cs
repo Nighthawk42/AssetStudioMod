@@ -8,6 +8,12 @@ namespace AssetStudioCLI
     {
         public static void Main(string[] args)
         {
+            if (Mcp.McpServer.IsMcpCommand(args))
+            {
+                Mcp.McpServer.RunAsync(args).GetAwaiter().GetResult();
+                return;
+            }
+
             CLIOptions.ParseArgs(args);
             if (CLIOptions.isParsed)
             {

@@ -82,13 +82,11 @@ namespace AssetStudioGUI
                 {
                     frm.SelectedPath = InitialFolder;
                 }
-#if !NETFRAMEWORK
                 if (Title != null)
                 {
                     frm.Description = Title;
                     frm.UseDescriptionForTitle = true;
                 }
-#endif
                 var result = owner == null ? frm.ShowDialog() : frm.ShowDialog(owner);
                 if (result == DialogResult.OK)
                 {

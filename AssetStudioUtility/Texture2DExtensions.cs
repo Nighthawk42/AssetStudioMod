@@ -1,40 +1,26 @@
 ﻿using System;
 using System.IO;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
+using SkiaSharp;
 
 namespace AssetStudio
 {
     public static class Texture2DExtensions
     {
-        public static Image<Bgra32> ConvertToImage(this Texture2D m_Texture2D, bool flip)
+        public static SKBitmap ConvertToImage(this Texture2D m_Texture2D, bool flip)
         {
             var converter = new Texture2DConverter(m_Texture2D);
             var buff = BigArrayPool<byte>.Shared.Rent(converter.OutputDataSize);
             var spanBuff = buff.AsSpan(0, converter.OutputDataSize);
             try
             {
-                if (!converter.DecodeTexture2D(buff)) 
+                if (!converter.DecodeTexture2D(buff))
                     return null;
 
-                Image<Bgra32> image;
-                if (converter.UsesSwitchSwizzle)
-                {
-                    var uncroppedSize = converter.GetUncroppedSize();
-                    image = Image.LoadPixelData<Bgra32>(spanBuff, uncroppedSize.Width, uncroppedSize.Height);
-                    image.Mutate(x => x.Crop(m_Texture2D.m_Width, m_Texture2D.m_Height));
-                }
-                else
-                {
-                    image = Image.LoadPixelData<Bgra32>(spanBuff, m_Texture2D.m_Width, m_Texture2D.m_Height);
-                }
-
-                if (flip)
-                {
-                    image.Mutate(x => x.Flip(FlipMode.Vertical));
-                }
-                return image;
+                // Switch textures are decoded at their padded size and cropped here
+                var sourceWidth = converter.UsesSwitchSwizzle
+                    ? converter.GetUncroppedSize().Width
+                    : m_Texture2D.m_Width;
+                return ImageExtensions.CreateBgraBitmap(spanBuff, sourceWidth, m_Texture2D.m_Width, m_Texture2D.m_Height, flip);
             }
             finally
             {

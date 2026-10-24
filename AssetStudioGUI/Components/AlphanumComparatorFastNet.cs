@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 
-#if NET6_0_OR_GREATER
 namespace AssetStudioGUI
 {
     internal class AlphanumComparatorFastNet : IComparer<string>
@@ -96,4 +95,3 @@ namespace AssetStudioGUI
         }
     }
 }
-#endif

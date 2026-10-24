@@ -1,6 +1,5 @@
 ﻿using AssetStudio;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
+using SkiaSharp;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -10,12 +9,12 @@ namespace AssetStudioGUI
 {
     public sealed class DirectBitmap : IDisposable
     {
-        public DirectBitmap(Image<Bgra32> image)
+        public DirectBitmap(SKBitmap image)
         {
             Width = image.Width;
             Height = image.Height;
             Bits = BigArrayPool<byte>.Shared.Rent(Width * Height * 4);
-            image.CopyPixelDataTo(Bits);
+            image.GetPixelSpan().CopyTo(Bits);
             m_handle = GCHandle.Alloc(Bits, GCHandleType.Pinned);
             m_bitmap = new Bitmap(Width, Height, Stride, PixelFormat.Format32bppArgb, m_handle.AddrOfPinnedObject());
         }

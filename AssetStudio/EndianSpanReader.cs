@@ -47,23 +47,12 @@ namespace AssetStudio
             return ReadSingle((ReadOnlySpan<byte>)data, start, isBigEndian);
         }
 
-#if NETFRAMEWORK
-        public static float ReadSingle(this ReadOnlySpan<byte> data, int start, bool isBigEndian)
-        {
-            var bytes = data.Slice(start, 4).ToArray();
-            if ((isBigEndian && BitConverter.IsLittleEndian) || (!isBigEndian && !BitConverter.IsLittleEndian))
-                bytes.AsSpan().Reverse();
-
-            return BitConverter.ToSingle(bytes, 0);
-        }
-#else
         public static float ReadSingle(this ReadOnlySpan<byte> data, int start, bool isBigEndian)
         {
             return isBigEndian
                 ? BinaryPrimitives.ReadSingleBigEndian(data[start..])
                 : BinaryPrimitives.ReadSingleLittleEndian(data[start..]);
         }
-#endif
 
         public static string ReadStringToNull(this Span<byte> data, int maxLength = 32767)
         {
@@ -85,11 +74,7 @@ namespace AssetStudio
                 count++;
             }
             bytes = bytes.Slice(0, count);
-#if NETFRAMEWORK
-            return Encoding.UTF8.GetString(bytes.ToArray());
-#else
             return Encoding.UTF8.GetString(bytes);
-#endif
         }
     }
 }

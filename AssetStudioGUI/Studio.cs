@@ -1211,19 +1211,11 @@ namespace AssetStudioGUI
                             return null;
                         var mocPathSpan = mocPath.AsSpan();
                         var modelNameFromPath = mocPathSpan.Slice(mocPathSpan.LastIndexOf('/') + 1);
-#if NET9_0_OR_GREATER
                         foreach (var range in assetKvp.Value.AsSpan().Split('/'))
                         {
                             if (modelNameFromPath.SequenceEqual(assetKvp.Value.AsSpan()[range]))
                                 return assetKvp.Key;
                         }
-#else
-                        foreach (var str in assetKvp.Value.Split('/'))
-                        {
-                            if (modelNameFromPath.SequenceEqual(str.AsSpan()))
-                                return assetKvp.Key;
-                        }
-#endif
                         return null;
                     }).Where(x => x != null).ToList();
 

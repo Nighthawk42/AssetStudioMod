@@ -31,6 +31,11 @@ namespace AssetStudioCLI
             Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
             Progress.Default = new Progress<int>(ShowCurProgressValue);
             Progress.SetInstance(1, new Progress<int>(ShowCurProgressValue));
+            ApplyOptions();
+        }
+
+        public static void ApplyOptions()
+        {
             assetsManager.LoadViaTypeTree = !CLIOptions.f_avoidLoadingViaTypetree.Value;
             assetsManager.Options.CustomUnityVersion = CLIOptions.o_unityVersion.Value;
             assetsManager.Options.BundleOptions.CustomBlockInfoCompression = CLIOptions.o_bundleBlockInfoCompression.Value;
@@ -1215,19 +1220,11 @@ namespace AssetStudioCLI
                         return null;
                     var mocPathSpan = mocPath.AsSpan();
                     var modelNameFromPath = mocPathSpan.Slice(mocPathSpan.LastIndexOf('/') + 1);
-#if NET9_0_OR_GREATER
                     foreach (var range in assetKvp.Value.AsSpan().Split('/'))
                     {
                         if (modelNameFromPath.SequenceEqual(assetKvp.Value.AsSpan()[range]))
                             return assetKvp.Key;
                     }
-#else
-                    foreach (var str in assetKvp.Value.Split('/'))
-                    {
-                        if (modelNameFromPath.SequenceEqual(str.AsSpan()))
-                            return assetKvp.Key;
-                    }
-#endif
                     return null;
                 }).Where(x => x != null).ToList();
 
@@ -1311,6 +1308,21 @@ namespace AssetStudioCLI
         {
             assetsManager.Clear();
             assemblyLoader.Clear();
+        }
+
+        // Fully resets loaded state so a long-lived process (MCP server) can run multiple jobs
+        public static void Reset()
+        {
+            Clear();
+            assetsManager = new AssetsManager();
+            assemblyLoader = new AssemblyLoader();
+            parsedAssetsList = new List<AssetItem>();
+            gameObjectTree = new List<BaseNode>();
+            l2dModelDict = new Dictionary<MonoBehaviour, CubismModel>();
+            containers = new Dictionary<AssetStudio.Object, string>();
+            Exporter.ClearHash();
+            ParallelExporter.ClearHash();
+            ApplyOptions();
         }
     }
 }

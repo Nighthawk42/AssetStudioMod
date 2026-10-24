@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-#if NETFRAMEWORK
-using AssetStudio.PInvoke;
-#endif
 
 namespace BundleCompression.Oodle
 {
@@ -10,12 +7,6 @@ namespace BundleCompression.Oodle
     {
         private const string LibName = "ooz";
 
-#if NETFRAMEWORK
-        static OodleLZ()
-        {
-            DllLoader.PreloadDll(LibName);
-        }
-#endif
 
         [DllImport(LibName)]
         private static extern int Ooz_Decompress(

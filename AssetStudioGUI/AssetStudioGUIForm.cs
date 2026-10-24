@@ -18,16 +18,9 @@ using System.Timers;
 using System.Windows.Forms;
 using static AssetStudioGUI.Studio;
 using Font = AssetStudio.Font;
-using Microsoft.WindowsAPICodePack.Taskbar;
-#if NET472
-using OpenTK;
-using Vector3 = OpenTK.Vector3;
-using Vector4 = OpenTK.Vector4;
-#else
 using Vector3 = OpenTK.Mathematics.Vector3;
 using Vector4 = OpenTK.Mathematics.Vector4;
 using Matrix4 = OpenTK.Mathematics.Matrix4;
-#endif
 
 namespace AssetStudioGUI
 {
@@ -89,11 +82,7 @@ namespace AssetStudioGUI
         private int sortColumn = -1;
         private bool reverseSort;
 
-#if NETFRAMEWORK
-        private AlphanumComparatorFast alphanumComparator = new AlphanumComparatorFast();
-#else
         private AlphanumComparatorFastNet alphanumComparator = new AlphanumComparatorFastNet();
-#endif
 
         //asset list selection
         private List<int> selectedIndicesPrevList = new List<int>();
@@ -117,7 +106,7 @@ namespace AssetStudioGUI
 
         private GUILogger logger;
 
-        private TaskbarManager taskbar = TaskbarManager.Instance;
+        private readonly TaskbarProgress taskbar;
         private System.Drawing.Font progressBarTextFont;
         private Brush progressBarTextBrush;
         private StringFormat progressBarTextFormat;
@@ -132,6 +121,7 @@ namespace AssetStudioGUI
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             ConsoleWindow.RunConsole(Properties.Settings.Default.showConsole);
             InitializeComponent();
+            taskbar = new TaskbarProgress(() => IsHandleCreated ? Handle : IntPtr.Zero);
             ApplyColorTheme(out isDarkMode);
 
             var appAssembly = typeof(Program).Assembly.GetName();
@@ -2553,7 +2543,6 @@ namespace AssetStudioGUI
             if (SystemInformation.HighContrast)
                 return;
 
-#if NET9_0_OR_GREATER
 #pragma warning disable WFO5001 //for evaluation purposes only
             var currentTheme = Properties.Settings.Default.guiColorTheme;
             colorThemeToolStripMenu.Visible = true;
@@ -2581,7 +2570,6 @@ namespace AssetStudioGUI
                 //skip
             }
 #pragma warning restore WFO5001
-#endif
             if (isDarkMode)
             {
                 assetListView.GridLines = false;
@@ -3149,11 +3137,7 @@ namespace AssetStudioGUI
                 GL.UniformMatrix4(uniformModelMatrix, false, ref modelMatrixData);
                 GL.UniformMatrix4(uniformViewMatrix, false, ref viewMatrixData);
                 GL.UniformMatrix4(uniformProjMatrix, false, ref projMatrixData);
-#if NETFRAMEWORK
-                GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-#else
                 GL.PolygonMode(TriangleFace.FrontAndBack, PolygonMode.Fill);
-#endif
                 GL.DrawElements(BeginMode.Triangles, indiceData.Length, DrawElementsType.UnsignedInt, 0);
             }
             //Wireframe
@@ -3165,11 +3149,7 @@ namespace AssetStudioGUI
                 GL.UniformMatrix4(uniformModelMatrix, false, ref modelMatrixData);
                 GL.UniformMatrix4(uniformViewMatrix, false, ref viewMatrixData);
                 GL.UniformMatrix4(uniformProjMatrix, false, ref projMatrixData);
-#if NETFRAMEWORK
-                GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-#else
                 GL.PolygonMode(TriangleFace.FrontAndBack, PolygonMode.Line);
-#endif
                 GL.DrawElements(BeginMode.Triangles, indiceData.Length, DrawElementsType.UnsignedInt, 0);
                 GL.Disable(EnableCap.PolygonOffsetLine);
             }

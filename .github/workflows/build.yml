@@ -2,56 +2,67 @@ name: AssetStudioBuild
 
 on:
   push:
-    branches: [ master ]
+    branches: [ AssetStudioMod ]
   pull_request:
-    branches: [ master ]
-
+    branches: [ AssetStudioMod ]
   workflow_dispatch:
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: microsoft/setup-msbuild@v1.1
-      
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - uses: microsoft/setup-msbuild@v2
+
+      - name: Cache FBX SDK
+        id: cache-fbx
+        uses: actions/cache@v4
+        with:
+          path: C:\Program Files\Autodesk\FBX\FBX SDK\2020.2.1
+          key: fbxsdk-2020.2.1-vs2019
+
       - name: Download FBX SDK
+        if: steps.cache-fbx.outputs.cache-hit != 'true'
+        shell: pwsh
         run: |
-          md fbx
-          cd fbx
-          Invoke-WebRequest "https://damassets.autodesk.net/content/dam/autodesk/www/adn/fbx/2020-2-1/fbx202021_fbxsdk_vs2019_win.exe" -OutFile "fbxsdk.exe"
-          Start-Process -FilePath "fbxsdk.exe" /S -Wait
-          Invoke-WebRequest "https://damassets.autodesk.net/content/dam/autodesk/www/adn/fbx/2020-2-1/fbx202021_fbxsdk_vs2019_pdbs.exe" -OutFile "fbxpdb.exe"
-          Start-Process -FilePath "fbxpdb.exe" /S -Wait
-          cd ..
+          New-Item -ItemType Directory -Force fbx | Out-Null
+          Invoke-WebRequest "https://damassets.autodesk.net/content/dam/autodesk/www/adn/fbx/2020-2-1/fbx202021_fbxsdk_vs2019_win.exe" -OutFile "fbx\fbxsdk.exe"
+          Start-Process -FilePath "fbx\fbxsdk.exe" -ArgumentList "/S" -Wait
 
-      - name: Nuget Restore
-        run: nuget restore
-      
-      - name: Build .Net472
-        run: msbuild /p:Configuration=Release /p:TargetFramework=net472 /verbosity:minimal
+      - name: Build native libraries
+        shell: pwsh
+        run: |
+          foreach ($platform in 'Win32', 'x64') {
+            msbuild Texture2DDecoderNative\Texture2DDecoderNative.vcxproj /p:Configuration=Release /p:Platform=$platform /verbosity:minimal
+            if ($LASTEXITCODE) { exit $LASTEXITCODE }
+            msbuild AssetStudioFBXNative\AssetStudioFBXNative.vcxproj /p:Configuration=Release /p:Platform=$platform /verbosity:minimal
+            if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          }
 
-      - name: Build .Net5
-        run: msbuild /t:AssetStudioGUI:publish /p:Configuration=Release /p:TargetFramework=net5.0-windows /p:SelfContained=false /verbosity:minimal
+      - name: Publish GUI
+        run: dotnet publish AssetStudioGUI\AssetStudioGUI.csproj -c Release -f net10.0-windows --self-contained false -o publish\GUI
 
-      - name: Build .Net6
-        run: msbuild /t:AssetStudioGUI:publish /p:Configuration=Release /p:TargetFramework=net6.0-windows /p:SelfContained=false /verbosity:minimal
+      - name: Publish CLI
+        run: dotnet publish AssetStudioCLI\AssetStudioCLI.csproj -c Release -f net10.0 --self-contained false -o publish\CLI
 
-      - name: Upload .Net472 Artifact
-        uses: actions/upload-artifact@v2
+      - name: Upload GUI artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: AssetStudio.net472
-          path: AssetStudioGUI/bin/Release/net472
+          name: AssetStudioModGUI.net10
+          path: publish/GUI
 
-      - name: Upload .Net5 Artifact
-        uses: actions/upload-artifact@v2
+      - name: Upload CLI artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: AssetStudio.net5
-          path: AssetStudioGUI/bin/Release/net5.0-windows/publish
-
-      - name: Upload .Net6 Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: AssetStudio.net6
-          path: AssetStudioGUI/bin/Release/net6.0-windows/publish
+          name: AssetStudioModCLI.net10
+          path: publish/CLI

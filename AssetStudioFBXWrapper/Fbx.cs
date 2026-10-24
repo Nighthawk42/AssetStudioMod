@@ -3,20 +3,11 @@ using System.IO;
 using System.Text.Json;
 using System.Collections.Generic;
 
-#if NETFRAMEWORK
-using AssetStudio.PInvoke;
-#endif
 
 namespace AssetStudio
 {
     public static partial class Fbx
     {
-#if NETFRAMEWORK
-        static Fbx()
-        {
-            DllLoader.PreloadDll(FbxDll.DllName);
-        }
-#endif
 
         public static Vector3 QuaternionToEuler(Quaternion q)
         {

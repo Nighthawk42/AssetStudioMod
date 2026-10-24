@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased
+#### Breaking Changes
+- Retargeted to .NET 10 (LTS). Dropped .NET Framework 4.7.2, .NET 8 and .NET 9 builds
+- Removed `Texture2DDecoderWrapper` (was only used by the net472 build)
+
+#### New features
+- Added MCP server mode to the CLI (`AssetStudioModCLI mcp`) for agent-driven asset inspection and extraction
+
+#### Other changes
+- Updated dependencies: ZstdSharp.Port 0.8.8, Newtonsoft.Json 13.0.4, Kyaru.Texture2DDecoder 0.17.1 (+ native packages 0.2.0)
+- Replaced SixLabors.ImageSharp with SkiaSharp (MIT) for image processing and PNG/JPEG/WebP encoding; BMP and TGA are written by built-in encoders
+- Replaced unmaintained WindowsAPICodePack with a built-in taskbar progress wrapper
+- CLI no longer waits for a key press on an invalid output folder when input is redirected
+- Rewrote the GitHub Actions workflow for .NET 10
+
 ## v0.19.0.0 [04-09-2025]
 #### Breaking Changes
 - Many asset fields of array type have been replaced with list type *(aka fixed the cause of most memory leaks)* ([35b2499](https://github.com/aelurum/AssetStudio/commit/35b24990c6a5d99c15b661578cf9da26aefe8d1b))

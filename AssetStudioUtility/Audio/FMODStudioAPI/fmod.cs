@@ -10,9 +10,6 @@ using System;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
-#if NETFRAMEWORK
-using AssetStudio.PInvoke;
-#endif
 
 namespace FMOD
 {
@@ -966,12 +963,6 @@ namespace FMOD
     */
         public struct Factory
     {
-#if NETFRAMEWORK
-        static Factory()
-        {
-            DllLoader.PreloadDll(VERSION.dll);
-        }
-#endif
         public static RESULT System_Create(out System system)
         {
             return FMOD5_System_Create(out system.handle, VERSION.number);

@@ -198,3 +198,41 @@ Advanced Options:
   --load-all                    (Flag) If specified, Studio will load assets of all types
                                 (Only for Dump, Info and ExportRaw modes)
 ```
+
+### MCP server
+
+`AssetStudioModCLI mcp` starts a [Model Context Protocol](https://modelcontextprotocol.io) server over stdio,
+so AI agents (Claude Code, Claude Desktop, etc.) can inspect and extract Unity assets.
+
+Claude Code:
+```
+claude mcp add assetstudio -- "C:\path\to\AssetStudioModCLI.exe" mcp
+```
+Claude Desktop / other clients (`mcpServers` config):
+```json
+{
+  "mcpServers": {
+    "assetstudio": {
+      "command": "C:\path\to\AssetStudioModCLI.exe",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+For portable builds use `"command": "dotnet"` and `"args": ["C:\path\to\AssetStudioModCLI.dll", "mcp"]`.
+
+Tools:
+| Tool | Description |
+|---|---|
+| `inspect_assets` | Unity version and number of exportable assets per type |
+| `list_assets` | Paged asset list (name, type, container, source file, size, path_id) with name/container filters |
+| `export_assets` | Export/convert assets (images, wav, obj, text, json, ...), raw export, or json dump |
+| `export_models` | Export Animator models or split scene objects as FBX |
+| `export_live2d` | Export Live2D Cubism models |
+| `extract_bundles` | Decompress bundles into their contained files |
+| `preview_asset` | Return a texture/sprite as an inline PNG, or a text asset's content |
+| `run_cli` | Run the CLI with raw arguments (for options not covered above) |
+
+Notes:
+- Each call reloads the input files; pass `asset_types` to keep this fast on large games. Calls run one at a time.
+- Path IDs are only unique per file. Pass `source_file` (from `list_assets`) together with `path_ids` / `path_id`.

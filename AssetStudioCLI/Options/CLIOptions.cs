@@ -165,7 +165,7 @@ namespace AssetStudioCLI.Options
             }
         }
 
-        private static void InitOptions()
+        internal static void InitOptions()
         {
             isParsed = false;
             cliArgs = null;
@@ -920,6 +920,11 @@ namespace AssetStudioCLI.Options
                             catch (Exception ex)
                             {
                                 Console.WriteLine($"{"Warning:".Color(brightYellow)} Invalid output folder \"{value.Color(brightYellow)}\".\n{ex.Message}");
+                                if (Console.IsInputRedirected)
+                                {
+                                    // Non-interactive session (scripts, MCP server): can't prompt, so abort
+                                    return;
+                                }
                                 Console.WriteLine($"Working folder \"{o_outputFolder.Value.Color(brightYellow)}\" will be used as the output folder.\n");
                                 Console.WriteLine("Press ESC to exit or any other key to continue...\n");
                                 switch (Console.ReadKey(intercept: true).Key)

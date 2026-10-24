@@ -45,14 +45,9 @@
 
 ## Requirements
 
-- AssetStudioMod.net472
-   - GUI/CLI - [.NET Framework 4.7.2](https://dotnet.microsoft.com/download/dotnet-framework/net472)
-- AssetStudioMod.net8
-   - GUI/CLI (Windows) - [.NET Desktop Runtime 8.0](https://dotnet.microsoft.com/download/dotnet/8.0)
-   - CLI (Linux/Mac) - [.NET Runtime 8.0](https://dotnet.microsoft.com/download/dotnet/8.0)
-- AssetStudioMod.net9
-   - GUI/CLI (Windows) - [.NET Desktop Runtime 9.0](https://dotnet.microsoft.com/download/dotnet/9.0)
-   - CLI (Linux/Mac) - [.NET Runtime 9.0](https://dotnet.microsoft.com/download/dotnet/9.0)
+- AssetStudioMod.net10
+   - GUI/CLI/MCP (Windows) - [.NET Desktop Runtime 10.0](https://dotnet.microsoft.com/download/dotnet/10.0)
+   - CLI/MCP (Linux/Mac) - [.NET Runtime 10.0](https://dotnet.microsoft.com/download/dotnet/10.0)
 
 ## CLI Usage
 
@@ -61,7 +56,7 @@ You can read CLI readme [here](https://github.com/aelurum/AssetStudio/blob/Asset
 ### Run
 
 - Command-line: `AssetStudioModCLI <asset folder path>`
-- Command-line for Portable versions (.NET 6+): `dotnet AssetStudioModCLI.dll <asset folder path>`
+- Command-line for Portable versions: `dotnet AssetStudioModCLI.dll <asset folder path>`
 
 ### Basic Samples
 
