@@ -43,6 +43,9 @@
             this.label18 = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
             this.gitAelurumLinkLabel = new System.Windows.Forms.LinkLabel();
+            this.label20 = new System.Windows.Forms.Label();
+            this.label21 = new System.Windows.Forms.Label();
+            this.gitNighthawkLinkLabel = new System.Windows.Forms.LinkLabel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.label5 = new System.Windows.Forms.Label();
             this.productNamelabel = new System.Windows.Forms.Label();
@@ -172,13 +175,17 @@
             this.tableLayoutPanel2.Controls.Add(this.label18, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.label19, 1, 1);
             this.tableLayoutPanel2.Controls.Add(this.gitAelurumLinkLabel, 2, 1);
+            this.tableLayoutPanel2.Controls.Add(this.label20, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.label21, 1, 2);
+            this.tableLayoutPanel2.Controls.Add(this.gitNighthawkLinkLabel, 2, 2);
             this.tableLayoutPanel2.Location = new System.Drawing.Point(6, 165);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.Padding = new System.Windows.Forms.Padding(2);
-            this.tableLayoutPanel2.RowCount = 2;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(350, 40);
+            this.tableLayoutPanel2.RowCount = 3;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(350, 58);
             this.tableLayoutPanel2.TabIndex = 15;
             // 
             // label16
@@ -246,6 +253,39 @@
             this.gitAelurumLinkLabel.TabStop = true;
             this.gitAelurumLinkLabel.Text = "GitHub page";
             this.gitAelurumLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.gitAelurumLinkLabel_LinkClicked);
+            //
+            // label20
+            //
+            this.label20.AutoSize = true;
+            this.label20.BackColor = System.Drawing.Color.Transparent;
+            this.label20.Location = new System.Drawing.Point(5, 38);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(81, 13);
+            this.label20.TabIndex = 15;
+            this.label20.Text = "Author of fork:";
+            //
+            // label21
+            //
+            this.label21.AutoSize = true;
+            this.label21.BackColor = System.Drawing.Color.Transparent;
+            this.label21.Location = new System.Drawing.Point(101, 38);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(126, 13);
+            this.label21.TabIndex = 16;
+            this.label21.Text = "Nighthawk42 (c) 2026";
+            //
+            // gitNighthawkLinkLabel
+            //
+            this.gitNighthawkLinkLabel.AutoSize = true;
+            this.gitNighthawkLinkLabel.BackColor = System.Drawing.Color.Transparent;
+            this.gitNighthawkLinkLabel.LinkColor = System.Drawing.SystemColors.MenuHighlight;
+            this.gitNighthawkLinkLabel.Location = new System.Drawing.Point(237, 38);
+            this.gitNighthawkLinkLabel.Name = "gitNighthawkLinkLabel";
+            this.gitNighthawkLinkLabel.Size = new System.Drawing.Size(67, 13);
+            this.gitNighthawkLinkLabel.TabIndex = 17;
+            this.gitNighthawkLinkLabel.TabStop = true;
+            this.gitNighthawkLinkLabel.Text = "GitHub page";
+            this.gitNighthawkLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.gitNighthawkLinkLabel_LinkClicked);
             // 
             // tableLayoutPanel1
             // 
@@ -491,6 +531,9 @@
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.LinkLabel gitAelurumLinkLabel;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.LinkLabel gitNighthawkLinkLabel;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label productNamelabel;

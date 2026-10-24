@@ -123,6 +123,7 @@ namespace AssetStudioGUI
             InitializeComponent();
             taskbar = new TaskbarProgress(() => IsHandleCreated ? Handle : IntPtr.Zero);
             ApplyColorTheme(out isDarkMode);
+            CatppuccinTheme.Apply(this);
 
             var appAssembly = typeof(Program).Assembly.GetName();
             guiTitle = $"{appAssembly.Name} v{appAssembly.Version}";
@@ -2537,6 +2538,17 @@ namespace AssetStudioGUI
             Properties.Settings.Default.Save();
         }
 
+        private Dictionary<GuiColorTheme, ToolStripMenuItem> ColorThemeMenuItems => new()
+        {
+            [GuiColorTheme.System] = colorThemeAutoToolStripMenuItem,
+            [GuiColorTheme.Light] = colorThemeLightToolStripMenuItem,
+            [GuiColorTheme.Dark] = colorThemeDarkToolStripMenuItem,
+            [GuiColorTheme.CatppuccinLatte] = colorThemeCatppuccinLatteToolStripMenuItem,
+            [GuiColorTheme.CatppuccinFrappe] = colorThemeCatppuccinFrappeToolStripMenuItem,
+            [GuiColorTheme.CatppuccinMacchiato] = colorThemeCatppuccinMacchiatoToolStripMenuItem,
+            [GuiColorTheme.CatppuccinMocha] = colorThemeCatppuccinMochaToolStripMenuItem,
+        };
+
         private void ApplyColorTheme(out bool isDarkMode)
         {
             isDarkMode = false;
@@ -2546,22 +2558,30 @@ namespace AssetStudioGUI
 #pragma warning disable WFO5001 //for evaluation purposes only
             var currentTheme = Properties.Settings.Default.guiColorTheme;
             colorThemeToolStripMenu.Visible = true;
+            if (ColorThemeMenuItems.TryGetValue(currentTheme, out var menuItem))
+            {
+                menuItem.Checked = true;
+            }
+            var palette = CatppuccinPalette.FromTheme(currentTheme);
             try
             {
                 switch (currentTheme)
                 {
                     case GuiColorTheme.System:
                         Application.SetColorMode(SystemColorMode.System);
-                        colorThemeAutoToolStripMenuItem.Checked = true;
                         isDarkMode = Application.IsDarkModeEnabled;
-                        break;
-                    case GuiColorTheme.Light:
-                        colorThemeLightToolStripMenuItem.Checked = true;
                         break;
                     case GuiColorTheme.Dark:
                         Application.SetColorMode(SystemColorMode.Dark);
-                        colorThemeDarkToolStripMenuItem.Checked = true;
                         isDarkMode = true;
+                        break;
+                    default:
+                        // Catppuccin dark flavors build on the dark mode for native parts (scroll bars, etc.)
+                        if (palette?.IsDark == true)
+                        {
+                            Application.SetColorMode(SystemColorMode.Dark);
+                            isDarkMode = true;
+                        }
                         break;
                 }
             }
@@ -2570,6 +2590,7 @@ namespace AssetStudioGUI
                 //skip
             }
 #pragma warning restore WFO5001
+            CatppuccinTheme.Initialize(currentTheme);
             if (isDarkMode)
             {
                 assetListView.GridLines = false;
@@ -2580,43 +2601,21 @@ namespace AssetStudioGUI
             }
         }
 
-        private void colorThemeAutoToolStripMenuItem_Click(object sender, EventArgs e)
+        private void colorThemeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (!colorThemeAutoToolStripMenuItem.Checked)
+            var clicked = (ToolStripMenuItem)sender;
+            if (clicked.Checked)
+                return;
+            foreach (var (theme, item) in ColorThemeMenuItems)
             {
-                colorThemeAutoToolStripMenuItem.Checked = true;
-                colorThemeLightToolStripMenuItem.Checked = false;
-                colorThemeDarkToolStripMenuItem.Checked = false;
-                Properties.Settings.Default.guiColorTheme = GuiColorTheme.System;
-                Properties.Settings.Default.Save();
-                ShowThemeChangingMsg();
+                item.Checked = item == clicked;
+                if (item == clicked)
+                {
+                    Properties.Settings.Default.guiColorTheme = theme;
+                }
             }
-        }
-
-        private void colorThemeLightToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (!colorThemeLightToolStripMenuItem.Checked)
-            {
-                colorThemeAutoToolStripMenuItem.Checked = false;
-                colorThemeLightToolStripMenuItem.Checked = true;
-                colorThemeDarkToolStripMenuItem.Checked = false;
-                Properties.Settings.Default.guiColorTheme = GuiColorTheme.Light;
-                Properties.Settings.Default.Save();
-                ShowThemeChangingMsg();
-            }
-        }
-
-        private void colorThemeDarkToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (!colorThemeDarkToolStripMenuItem.Checked)
-            {
-                colorThemeAutoToolStripMenuItem.Checked = false;
-                colorThemeLightToolStripMenuItem.Checked = false;
-                colorThemeDarkToolStripMenuItem.Checked = true;
-                Properties.Settings.Default.guiColorTheme = GuiColorTheme.Dark;
-                Properties.Settings.Default.Save();
-                ShowThemeChangingMsg();
-            }
+            Properties.Settings.Default.Save();
+            ShowThemeChangingMsg();
         }
 
         private static void ShowThemeChangingMsg()

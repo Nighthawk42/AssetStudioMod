@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.20.0.0 [24-10-2026] (Nighthawk42 fork)
 #### Breaking Changes
 - Retargeted to .NET 10 (LTS). Dropped .NET Framework 4.7.2, .NET 8 and .NET 9 builds
 - Removed `Texture2DDecoderWrapper` (was only used by the net472 build)
@@ -12,6 +12,8 @@
 
 #### New features
 - Added MCP server mode to the CLI (`AssetStudioModCLI mcp`) for agent-driven asset inspection and extraction
+- [GUI] Added Catppuccin color themes: Latte, Frappé, Macchiato and Mocha (Color Theme menu)
+- [GUI] About window lists the fork author and checks for updates on the fork's releases
 
 #### Other changes
 - Updated dependencies: ZstdSharp.Port 0.8.8, Newtonsoft.Json 13.0.4, Kyaru.Texture2DDecoder 0.17.1 (+ native packages 0.2.0)

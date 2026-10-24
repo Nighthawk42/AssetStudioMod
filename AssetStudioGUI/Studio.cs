@@ -23,7 +23,11 @@ namespace AssetStudioGUI
     {
         System,
         Light,
-        Dark
+        Dark,
+        CatppuccinLatte,
+        CatppuccinFrappe,
+        CatppuccinMacchiato,
+        CatppuccinMocha,
     }
 
     internal enum ExportType

@@ -11,6 +11,7 @@ namespace AssetStudioGUI
         public ExportOptions()
         {
             InitializeComponent();
+            CatppuccinTheme.Apply(this);
             assetGroupOptions.SelectedIndex = Properties.Settings.Default.assetGroupOption;
             filenameFormatComboBox.SelectedIndex = Properties.Settings.Default.filenameFormat;
             overwriteExistingFiles.Checked = Properties.Settings.Default.overwriteExistingFiles;

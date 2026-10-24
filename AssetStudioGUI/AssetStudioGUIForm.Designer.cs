@@ -105,6 +105,11 @@
             this.colorThemeAutoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.colorThemeLightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.colorThemeDarkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.colorThemeCatppuccinLatteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.colorThemeCatppuccinFrappeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.colorThemeCatppuccinMacchiatoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.colorThemeCatppuccinMochaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.colorThemeSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -830,7 +835,12 @@
             this.colorThemeToolStripMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.colorThemeAutoToolStripMenuItem,
             this.colorThemeLightToolStripMenuItem,
-            this.colorThemeDarkToolStripMenuItem});
+            this.colorThemeDarkToolStripMenuItem,
+            this.colorThemeSeparator,
+            this.colorThemeCatppuccinLatteToolStripMenuItem,
+            this.colorThemeCatppuccinFrappeToolStripMenuItem,
+            this.colorThemeCatppuccinMacchiatoToolStripMenuItem,
+            this.colorThemeCatppuccinMochaToolStripMenuItem});
             this.colorThemeToolStripMenu.Name = "colorThemeToolStripMenu";
             this.colorThemeToolStripMenu.Size = new System.Drawing.Size(87, 20);
             this.colorThemeToolStripMenu.Text = "Color Theme";
@@ -841,21 +851,54 @@
             this.colorThemeAutoToolStripMenuItem.Name = "colorThemeAutoToolStripMenuItem";
             this.colorThemeAutoToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
             this.colorThemeAutoToolStripMenuItem.Text = "Use system setting";
-            this.colorThemeAutoToolStripMenuItem.Click += new System.EventHandler(this.colorThemeAutoToolStripMenuItem_Click);
+            this.colorThemeAutoToolStripMenuItem.Click += new System.EventHandler(this.colorThemeToolStripMenuItem_Click);
             // 
             // colorThemeLightToolStripMenuItem
             // 
             this.colorThemeLightToolStripMenuItem.Name = "colorThemeLightToolStripMenuItem";
             this.colorThemeLightToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
             this.colorThemeLightToolStripMenuItem.Text = "Light";
-            this.colorThemeLightToolStripMenuItem.Click += new System.EventHandler(this.colorThemeLightToolStripMenuItem_Click);
+            this.colorThemeLightToolStripMenuItem.Click += new System.EventHandler(this.colorThemeToolStripMenuItem_Click);
             // 
             // colorThemeDarkToolStripMenuItem
             // 
             this.colorThemeDarkToolStripMenuItem.Name = "colorThemeDarkToolStripMenuItem";
             this.colorThemeDarkToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
             this.colorThemeDarkToolStripMenuItem.Text = "Dark";
-            this.colorThemeDarkToolStripMenuItem.Click += new System.EventHandler(this.colorThemeDarkToolStripMenuItem_Click);
+            this.colorThemeDarkToolStripMenuItem.Click += new System.EventHandler(this.colorThemeToolStripMenuItem_Click);
+            // 
+            // colorThemeSeparator
+            // 
+            this.colorThemeSeparator.Name = "colorThemeSeparator";
+            this.colorThemeSeparator.Size = new System.Drawing.Size(169, 6);
+            //
+            // colorThemeCatppuccinLatteToolStripMenuItem
+            //
+            this.colorThemeCatppuccinLatteToolStripMenuItem.Name = "colorThemeCatppuccinLatteToolStripMenuItem";
+            this.colorThemeCatppuccinLatteToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.colorThemeCatppuccinLatteToolStripMenuItem.Text = "Catppuccin Latte";
+            this.colorThemeCatppuccinLatteToolStripMenuItem.Click += new System.EventHandler(this.colorThemeToolStripMenuItem_Click);
+            //
+            // colorThemeCatppuccinFrappeToolStripMenuItem
+            //
+            this.colorThemeCatppuccinFrappeToolStripMenuItem.Name = "colorThemeCatppuccinFrappeToolStripMenuItem";
+            this.colorThemeCatppuccinFrappeToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.colorThemeCatppuccinFrappeToolStripMenuItem.Text = "Catppuccin Frappé";
+            this.colorThemeCatppuccinFrappeToolStripMenuItem.Click += new System.EventHandler(this.colorThemeToolStripMenuItem_Click);
+            //
+            // colorThemeCatppuccinMacchiatoToolStripMenuItem
+            //
+            this.colorThemeCatppuccinMacchiatoToolStripMenuItem.Name = "colorThemeCatppuccinMacchiatoToolStripMenuItem";
+            this.colorThemeCatppuccinMacchiatoToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.colorThemeCatppuccinMacchiatoToolStripMenuItem.Text = "Catppuccin Macchiato";
+            this.colorThemeCatppuccinMacchiatoToolStripMenuItem.Click += new System.EventHandler(this.colorThemeToolStripMenuItem_Click);
+            //
+            // colorThemeCatppuccinMochaToolStripMenuItem
+            //
+            this.colorThemeCatppuccinMochaToolStripMenuItem.Name = "colorThemeCatppuccinMochaToolStripMenuItem";
+            this.colorThemeCatppuccinMochaToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.colorThemeCatppuccinMochaToolStripMenuItem.Text = "Catppuccin Mocha";
+            this.colorThemeCatppuccinMochaToolStripMenuItem.Click += new System.EventHandler(this.colorThemeToolStripMenuItem_Click);
             // 
             // splitContainer1
             // 
@@ -1856,6 +1899,11 @@
         private System.Windows.Forms.ToolStripMenuItem colorThemeAutoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem colorThemeLightToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem colorThemeDarkToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem colorThemeCatppuccinLatteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem colorThemeCatppuccinFrappeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem colorThemeCatppuccinMacchiatoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem colorThemeCatppuccinMochaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator colorThemeSeparator;
         private System.Windows.Forms.Label FMODaudioChannelsLabel;
         private System.Windows.Forms.ToolStripMenuItem autoPlayAudioAssetsToolStripMenuItem;
         private System.Windows.Forms.CheckBox sceneExactSearchCheckBox;

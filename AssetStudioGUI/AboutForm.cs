@@ -21,6 +21,7 @@ namespace AssetStudioGUI
             modVersionLabel.Text = productVer;
 
             licenseRichTextBox.Text = GetLicenseText();
+            CatppuccinTheme.Apply(this);
         }
 
         private string GetLicenseText()
@@ -43,7 +44,7 @@ namespace AssetStudioGUI
 
         private void checkUpdatesLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            var ps = new ProcessStartInfo("https://github.com/aelurum/AssetStudio/releases")
+            var ps = new ProcessStartInfo("https://github.com/Nighthawk42/AssetStudioMod/releases")
             {
                 UseShellExecute = true
             };
@@ -53,6 +54,15 @@ namespace AssetStudioGUI
         private void gitPerfareLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             var ps = new ProcessStartInfo("https://github.com/Perfare")
+            {
+                UseShellExecute = true
+            };
+            Process.Start(ps);
+        }
+
+        private void gitNighthawkLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            var ps = new ProcessStartInfo("https://github.com/Nighthawk42/AssetStudioMod")
             {
                 UseShellExecute = true
             };

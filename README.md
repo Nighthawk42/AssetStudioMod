@@ -1,10 +1,19 @@
 # AssetStudioMod
 
-[![Release](https://img.shields.io/github/v/release/aelurum/AssetStudio?color=blue)](https://github.com/aelurum/AssetStudio/releases/latest) [![Downloads](https://img.shields.io/github/downloads/aelurum/AssetStudio/total?color=blue)](https://github.com/aelurum/AssetStudio/releases/latest) [![Download latest release](https://img.shields.io/badge/Download_latest_release-blue)](https://github.com/aelurum/AssetStudio/releases/latest)
-
-[![Build status](https://ci.appveyor.com/api/projects/status/5qyai0hqs0ktyara/branch/AssetStudioMod?svg=true)](https://ci.appveyor.com/project/aelurum/assetstudiomod/branch/AssetStudioMod) [![Download latest build](https://img.shields.io/badge/Download_latest_build-brightgreen)](https://ci.appveyor.com/project/aelurum/assetstudiomod/branch/AssetStudioMod/artifacts)
+[![Release](https://img.shields.io/github/v/release/Nighthawk42/AssetStudioMod?color=blue)](https://github.com/Nighthawk42/AssetStudioMod/releases/latest) [![Download latest release](https://img.shields.io/badge/Download_latest_release-blue)](https://github.com/Nighthawk42/AssetStudioMod/releases/latest)
 
 **AssetStudioMod** - modified version of Perfare's [AssetStudio](https://github.com/Perfare/AssetStudio), mainly focused on UI optimization and some functionality enhancements.
+
+This is **Nighthawk42's fork** of [aelurum's AssetStudioMod](https://github.com/aelurum/AssetStudio). It adds:
+
+- **.NET 10** builds (GUI, CLI and MCP server in one folder)
+- **MCP server** (`AssetStudioModCLI mcp`) so AI agents can inspect, preview and extract Unity assets
+- **glTF 2.0 (.glb)** model export with embedded textures, skins, blend shapes and animations, replacing FBX
+  (no Autodesk FBX SDK needed); skinned models export in their bind pose by default
+- **SkiaSharp** image processing (fixes hairline seams in tight-packed sprites)
+- **Catppuccin** color themes (Latte, Frappé, Macchiato, Mocha)
+
+See the [CHANGELOG](CHANGELOG.md) for details.
 
 **Neither the repository, nor the tool, nor the author of the tool, nor the author of the modification is affiliated with, sponsored, or authorized by Unity Technologies or its affiliates.**
 
